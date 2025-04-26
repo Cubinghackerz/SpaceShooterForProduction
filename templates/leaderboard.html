@@ -1,0 +1,77 @@
+{% extends "auth_base.html" %}
+
+{% block content %}
+<div class="leaderboard-container">
+    <h2 class="mb-4 text-center">Global Leaderboard</h2>
+    
+    {% if top_scores %}
+        <div class="table-responsive">
+            <table class="table table-dark table-hover">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Player</th>
+                        <th>Score</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for score in top_scores %}
+                        <tr {% if current_user.is_authenticated and score.user_id == current_user.id %}class="table-info text-dark"{% endif %}>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ score.player_name }}</td>
+                            <td>{{ score.score }}</td>
+                            <td>{{ score.created_at.strftime('%Y-%m-%d') }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        {% if current_user.is_authenticated and user_rank %}
+            <div class="mt-4 p-3 bg-dark border border-info rounded text-center">
+                <p class="mb-0">Your highest score is ranked <strong>#{{ user_rank }}</strong> with <strong>{{ user_best_score.score }}</strong> points</p>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="alert alert-info">
+            No scores have been recorded yet. Be the first to make it to the leaderboard!
+        </div>
+    {% endif %}
+    
+    <div class="mt-4 text-center">
+        <a href="{{ url_for('index') }}" class="btn btn-primary">Play Game</a>
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('profile') }}" class="btn btn-outline-light ms-2">My Profile</a>
+        {% else %}
+            <a href="{{ url_for('login') }}" class="btn btn-outline-light ms-2">Login</a>
+            <a href="{{ url_for('register') }}" class="btn btn-outline-success ms-2">Register</a>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .leaderboard-container {
+        width: 100%;
+    }
+    
+    .table {
+        background: rgba(30, 41, 59, 0.5);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .table thead th {
+        border-color: rgba(255, 255, 255, 0.1);
+        color: var(--theme-primary);
+    }
+    
+    .table td {
+        border-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    .table-info {
+        background-color: rgba(52, 152, 219, 0.3) !important;
+    }
+</style>
+{% endblock %}
